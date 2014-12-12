@@ -37,7 +37,7 @@ import static java.util.Arrays.asList;
 
 @Extension
 public class GoPluginImpl implements GoPlugin {
-    public final static String EXTENSION_NAME = "task-extension";
+    public final static String EXTENSION_NAME = "task";
     public final static List<String> SUPPORTED_API_VERSIONS = asList("1.0");
 
     public final static String REQUEST_CONFIGURATION = "configuration";
