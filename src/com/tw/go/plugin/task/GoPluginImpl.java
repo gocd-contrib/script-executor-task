@@ -14,7 +14,7 @@
  * limitations under the License.
  *************************GO-LICENSE-END***********************************/
 
-package com.tw.qa.plugin.sample;
+package com.tw.go.plugin.task;
 
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
@@ -126,7 +126,7 @@ public class GoPluginImpl implements GoPlugin {
             }
         } catch (Exception e) {
             response.put("success", false);
-            response.put("message", e.getMessage());
+            response.put("message", "Script execution interrupted. Reason: " + e.getMessage());
         }
         deleteShellScript(workingDirectory, scriptFileName);
         return renderJSON(SUCCESS_RESPONSE_CODE, response);

@@ -1,15 +1,5 @@
 <div class="form_item_block">
   <label>Script:<span class="asterisk">*</span></label>
-  <textarea ng-model="script" ng-required="true"></textarea>
+  <textarea ng-model="script" ng-required="true" rows="20" cols="60"></textarea>
   <span class="form_error" ng-show="GOINPUTNAME[script].$error.server">{{ GOINPUTNAME[script].$error.server }}</span>
-</div>
-<div class="form_item_block">
-  <label>Test:<span class="asterisk">*</span></label>
-  <input type="text" ng-model="test" ng-required="true" />
-  <span class="form_error" ng-show="GOINPUTNAME[test].$error.server">{{ GOINPUTNAME[test].$error.server }}</span>
-</div>
-<div class="form_item_block">
-  <label>Password:<span class="asterisk">*</span></label>
-  <input type="password" ng-model="password" />
-  <span class="form_error" ng-show="GOINPUTNAME[password].$error.server">{{ GOINPUTNAME[password].$error.server }}</span>
 </div>
