@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<go-plugin id="script-executor" version="1">
+    <about>
+        <name>Script Executor</name>
+        <version>0.1</version>
+        <target-go-version>14.4.0</target-go-version>
+        <description>
+            Thoughtworks Go plugin to run scripts
+        </description>
+        <vendor>
+            <name>Srinivas Upadhya</name>
+            <url>https://github.com/srinivasupadhya</url>
+        </vendor>
+    </about>
+</go-plugin>
