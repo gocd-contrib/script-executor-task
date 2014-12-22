@@ -10,4 +10,4 @@ This could be preferable because:
 It should not be used as a replacement for important scripts like deployment scripts. They should remain in your repository.
 
 *Usage:*
-Download dist/script-executor-task-0.1.jar or from releases & place it in <go-server-location>/plugins/external & restart Go Server.
+Download jar from releases & place it in <go-server-location>/plugins/external & restart Go Server.
