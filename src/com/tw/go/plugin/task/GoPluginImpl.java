@@ -162,7 +162,7 @@ public class GoPluginImpl implements GoPlugin {
 
     private int executeScript(String workingDirectory, String scriptFileName, Boolean isWindows, Map<String, String> environmentVariables) throws IOException, InterruptedException {
         if (isWindows) {
-            return executeCommand(workingDirectory, environmentVariables, "cmd", "/c", "./" + scriptFileName);
+            return executeCommand(workingDirectory, environmentVariables, "cmd", "/c", scriptFileName);
         }
         return executeCommand(workingDirectory, environmentVariables, "/bin/sh", "-c", "./" + scriptFileName);
     }
