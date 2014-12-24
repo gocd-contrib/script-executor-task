@@ -28,6 +28,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.task.JobConsoleLogger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -100,6 +101,7 @@ public class GoPluginImpl implements GoPlugin {
         Map<String, Object> response = new HashMap<String, Object>();
         String workingDirectory = null;
         String scriptFileName = null;
+        Boolean isWindows = isWindows();
         try {
             Map<String, Object> map = (Map<String, Object>) new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), Object.class);
 
@@ -111,44 +113,66 @@ public class GoPluginImpl implements GoPlugin {
             Map<String, String> scriptConfig = (Map<String, String>) configKeyValuePairs.get("script");
             String scriptValue = scriptConfig.get("value");
 
-            scriptFileName = UUID.randomUUID() + ".sh";
+            scriptFileName = generateScriptFileName(isWindows);
 
-            createShellScript(workingDirectory, scriptFileName, scriptValue);
+            createScript(workingDirectory, scriptFileName, isWindows, scriptValue);
 
-            int exitCode = executeShellScript(workingDirectory, environmentVariables, scriptFileName);
+            int exitCode = executeScript(workingDirectory, scriptFileName, isWindows, environmentVariables);
 
             if (exitCode == 0) {
                 response.put("success", true);
-                response.put("message", "Script completed successfully.");
+                response.put("message", "[script-executor] Script completed successfully.");
             } else {
                 response.put("success", false);
-                response.put("message", "Script completed with exit code: " + exitCode + ".");
+                response.put("message", "[script-executor] Script completed with exit code: " + exitCode + ".");
             }
         } catch (Exception e) {
             response.put("success", false);
-            response.put("message", "Script execution interrupted. Reason: " + e.getMessage());
+            response.put("message", "[script-executor] Script execution interrupted. Reason: " + e.getMessage());
         }
-        deleteShellScript(workingDirectory, scriptFileName);
+        deleteScript(workingDirectory, scriptFileName);
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
 
-    private void createShellScript(String workingDirectory, String scriptFileName, String scriptValue) throws IOException, InterruptedException {
-        File file = new File(workingDirectory + "/" + scriptFileName);
-        FileUtils.writeStringToFile(file, scriptValue);
-
-        executeCommand(workingDirectory, new HashMap<String, String>(), "chmod", "u+x", scriptFileName);
-
-        JobConsoleLogger.getConsoleLogger().printLine("Script written into '" + file.getAbsolutePath() + "'.");
+    private boolean isWindows() {
+        String osName = System.getProperty("os.name");
+        boolean isWindows = StringUtils.containsIgnoreCase(osName, "windows");
+        JobConsoleLogger.getConsoleLogger().printLine("[script-executor] OS detected: '" + osName + "'. Is Windows? " + isWindows);
+        return isWindows;
     }
 
-    private int executeShellScript(String workingDirectory, Map<String, String> environmentVariables, String scriptFileName) throws IOException, InterruptedException {
+    private String generateScriptFileName(Boolean isWindows) {
+        return UUID.randomUUID() + (isWindows ? ".bat" : ".sh");
+    }
+
+    private String getScriptPath(String workingDirectory, String scriptFileName) {
+        return workingDirectory + "/" + scriptFileName;
+    }
+
+    private void createScript(String workingDirectory, String scriptFileName, Boolean isWindows, String scriptValue) throws IOException, InterruptedException {
+        File file = new File(getScriptPath(workingDirectory, scriptFileName));
+        FileUtils.writeStringToFile(file, scriptValue);
+
+        if (!isWindows) {
+            executeCommand(workingDirectory, null, "chmod", "u+x", scriptFileName);
+        }
+
+        JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script written into '" + file.getAbsolutePath() + "'.");
+    }
+
+    private int executeScript(String workingDirectory, String scriptFileName, Boolean isWindows, Map<String, String> environmentVariables) throws IOException, InterruptedException {
+        if (isWindows) {
+            return executeCommand(workingDirectory, environmentVariables, "cmd", "/c", "./" + scriptFileName);
+        }
         return executeCommand(workingDirectory, environmentVariables, "/bin/sh", "-c", "./" + scriptFileName);
     }
 
     private int executeCommand(String workingDirectory, Map<String, String> environmentVariables, String... command) throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.directory(new File(workingDirectory));
-        processBuilder.environment().putAll(environmentVariables);
+        if (environmentVariables != null && !environmentVariables.isEmpty()) {
+            processBuilder.environment().putAll(environmentVariables);
+        }
         Process process = processBuilder.start();
 
         JobConsoleLogger.getConsoleLogger().readOutputOf(process.getInputStream());
@@ -157,9 +181,9 @@ public class GoPluginImpl implements GoPlugin {
         return process.waitFor();
     }
 
-    private void deleteShellScript(String workingDirectory, String scriptFileName) {
-        if (scriptFileName != null && !scriptFileName.trim().isEmpty()) {
-            FileUtils.deleteQuietly(new File(workingDirectory + "/" + scriptFileName));
+    private void deleteScript(String workingDirectory, String scriptFileName) {
+        if (!StringUtils.isEmpty(scriptFileName)) {
+            FileUtils.deleteQuietly(new File(getScriptPath(workingDirectory, scriptFileName)));
         }
     }
 
@@ -171,17 +195,6 @@ public class GoPluginImpl implements GoPlugin {
         fieldProperties.put("secure", isSecure);
         fieldProperties.put("display-order", displayOrder);
         return fieldProperties;
-    }
-
-    private Map<String, String> keyValuePairs(String configMapStr) {
-        Map<String, String> keyValuePairs = new HashMap<String, String>();
-        Map<String, Object> map = (Map<String, Object>) new GsonBuilder().create().fromJson(configMapStr, Object.class);
-        for (String field : map.keySet()) {
-            Map<String, Object> fieldProperties = (Map<String, Object>) map.get(field);
-            String value = (String) fieldProperties.get("value");
-            keyValuePairs.put(field, value);
-        }
-        return keyValuePairs;
     }
 
     private GoPluginApiResponse renderJSON(final int responseCode, Object response) {
