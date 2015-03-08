@@ -151,7 +151,7 @@ public class GoPluginImpl implements GoPlugin {
 
     private void createScript(String workingDirectory, String scriptFileName, Boolean isWindows, String scriptValue) throws IOException, InterruptedException {
         File file = new File(getScriptPath(workingDirectory, scriptFileName));
-        scriptValue = scriptValue.replaceAll("\r", "");
+        scriptValue = cleanupScript(scriptValue);
         FileUtils.writeStringToFile(file, scriptValue);
 
         if (!isWindows) {
@@ -159,6 +159,10 @@ public class GoPluginImpl implements GoPlugin {
         }
 
         JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script written into '" + file.getAbsolutePath() + "'.");
+    }
+
+    String cleanupScript(String scriptValue) {
+        return scriptValue.replaceAll("(\\r\\n|\\n|\\r)", System.getProperty("line.separator"));
     }
 
     private int executeScript(String workingDirectory, String scriptFileName, Boolean isWindows, Map<String, String> environmentVariables) throws IOException, InterruptedException {
