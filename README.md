@@ -1,6 +1,7 @@
 Go task plugin to run Shell scripts.
 
 *Notes:*
+
 This is only for convenience since you can run all commands directly through Go anyway.
 
 This could be preferable because:
@@ -10,4 +11,5 @@ This could be preferable because:
 It should not be used as a replacement for important scripts like deployment scripts. They should remain in your repository.
 
 *Usage:*
-Download jar from releases & place it in <go-server-location>/plugins/external & restart Go Server.
+
+Download jar from releases & place it in `<go-server-location>/plugins/external` & restart Go Server.
