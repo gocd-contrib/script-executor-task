@@ -151,6 +151,7 @@ public class GoPluginImpl implements GoPlugin {
 
     private void createScript(String workingDirectory, String scriptFileName, Boolean isWindows, String scriptValue) throws IOException, InterruptedException {
         File file = new File(getScriptPath(workingDirectory, scriptFileName));
+        scriptValue = scriptValue.replaceAll("\r", "");
         FileUtils.writeStringToFile(file, scriptValue);
 
         if (!isWindows) {
