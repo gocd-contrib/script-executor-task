@@ -1,5 +1,9 @@
 Go task plugin to run Shell scripts.
 
+*Usage:*
+
+![alt tag](https://raw.githubusercontent.com/srinivasupadhya/script-executor-task/master/images/screenshot.png)
+
 *Notes:*
 
 This is only for convenience since you can run all commands directly through Go anyway.
