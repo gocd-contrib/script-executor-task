@@ -42,8 +42,11 @@ public class GoPluginImpl implements GoPlugin {
     public final static List<String> SUPPORTED_API_VERSIONS = asList("1.0");
 
     public final static String REQUEST_CONFIGURATION = "configuration";
+    public final static String REQUEST_CONFIGURATION_2 = "go.plugin-settings.get-configuration";
     public final static String REQUEST_VALIDATION = "validate";
+    public final static String REQUEST_VALIDATION_2 = "go.plugin-settings.validate-configuration";
     public final static String REQUEST_TASK_VIEW = "view";
+    public final static String REQUEST_TASK_VIEW_2 = "go.plugin-settings.get-view";
     public final static String REQUEST_EXECUTION = "execute";
 
     public static final int SUCCESS_RESPONSE_CODE = 200;
@@ -57,11 +60,11 @@ public class GoPluginImpl implements GoPlugin {
 
     @Override
     public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) throws UnhandledRequestTypeException {
-        if (goPluginApiRequest.requestName().equals(REQUEST_CONFIGURATION)) {
+        if (goPluginApiRequest.requestName().equals(REQUEST_CONFIGURATION) || goPluginApiRequest.requestName().equals(REQUEST_CONFIGURATION_2)) {
             return handleConfiguration();
-        } else if (goPluginApiRequest.requestName().equals(REQUEST_VALIDATION)) {
+        } else if (goPluginApiRequest.requestName().equals(REQUEST_VALIDATION) || goPluginApiRequest.requestName().equals(REQUEST_VALIDATION_2)) {
             return handleValidation(goPluginApiRequest);
-        } else if (goPluginApiRequest.requestName().equals(REQUEST_TASK_VIEW)) {
+        } else if (goPluginApiRequest.requestName().equals(REQUEST_TASK_VIEW) || goPluginApiRequest.requestName().equals(REQUEST_TASK_VIEW_2)) {
             try {
                 return handleView();
             } catch (IOException e) {
