@@ -1,4 +1,11 @@
 <div class="form_item_block">
+  <label>sh Type:<span class="asterisk">*</span></label>
+  <select ng-model="shType">
+    <option value="bash">bash</option>
+    <option value="zsh">zsh</option>
+    <option value="csh">csh</option>
+    <option value="sh">sh</option>
+  </select>
   <label>Script:<span class="asterisk">*</span></label>
   <textarea ng-model="script" ng-required="true" rows="20" cols="60"></textarea>
   <span class="form_error" ng-show="GOINPUTNAME[script].$error.server">{{ GOINPUTNAME[script].$error.server }}</span>

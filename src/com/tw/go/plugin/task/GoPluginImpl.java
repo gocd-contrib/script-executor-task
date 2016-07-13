@@ -115,12 +115,14 @@ public class GoPluginImpl implements GoPlugin {
 
             Map<String, String> scriptConfig = (Map<String, String>) configKeyValuePairs.get("script");
             String scriptValue = scriptConfig.get("value");
+            Map<String, String> shTypeConfig = (Map<String, String>) configKeyValuePairs.get("shType");
+            String shType = shTypeConfig.get("value");
 
             scriptFileName = generateScriptFileName(isWindows);
 
             createScript(workingDirectory, scriptFileName, isWindows, scriptValue);
 
-            int exitCode = executeScript(workingDirectory, scriptFileName, isWindows, environmentVariables);
+            int exitCode = executeScript(workingDirectory, shType, scriptFileName, isWindows, environmentVariables);
 
             if (exitCode == 0) {
                 response.put("success", true);
@@ -168,11 +170,12 @@ public class GoPluginImpl implements GoPlugin {
         return scriptValue.replaceAll("(\\r\\n|\\n|\\r)", System.getProperty("line.separator"));
     }
 
-    private int executeScript(String workingDirectory, String scriptFileName, Boolean isWindows, Map<String, String> environmentVariables) throws IOException, InterruptedException {
+    private int executeScript(String workingDirectory, String shType, String scriptFileName, Boolean isWindows, Map<String, String> environmentVariables) throws IOException, InterruptedException {
         if (isWindows) {
             return executeCommand(workingDirectory, environmentVariables, "cmd", "/c", scriptFileName);
         }
-        return executeCommand(workingDirectory, environmentVariables, "/bin/sh", "-c", "./" + scriptFileName);
+        String shCmd = "/bin/" + shType;
+        return executeCommand(workingDirectory, environmentVariables, shCmd, "-c", "./" + scriptFileName);
     }
 
     private int executeCommand(String workingDirectory, Map<String, String> environmentVariables, String... command) throws IOException, InterruptedException {
