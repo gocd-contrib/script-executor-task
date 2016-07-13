@@ -85,7 +85,7 @@ public class GoPluginImpl implements GoPlugin {
     private GoPluginApiResponse handleConfiguration() {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("script", createField("Script", null, true, false, "0"));
-        response.put("shtype", createField("Script Type", null, true, false, "1"));
+        response.put("shtype", createField("Shell", null, true, false, "1"));
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
 
