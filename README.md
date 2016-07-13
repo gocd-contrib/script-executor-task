@@ -2,7 +2,7 @@ Go task plugin to run Shell scripts.
 
 *Usage:*
 
-![alt tag](https://raw.githubusercontent.com/srinivasupadhya/script-executor-task/master/images/screenshot.png)
+![alt tag](https://raw.githubusercontent.com/tw-leansw/script-executor-task/master/images/screenshot.png)
 
 *Notes:*
 
