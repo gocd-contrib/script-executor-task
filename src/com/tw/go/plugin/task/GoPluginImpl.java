@@ -121,6 +121,9 @@ public class GoPluginImpl implements GoPlugin {
             JobConsoleLogger.getConsoleLogger().printLine("-------------------------");
             Map<String, String> shTypeConfig = (Map<String, String>) configKeyValuePairs.get("shType");
             String shType = shTypeConfig.get("value");
+            if (shType == null || shType.trim().equals("")){
+                shType = "bash";
+            }
             JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script Type: " + shType);
 
             scriptFileName = generateScriptFileName(isWindows);
