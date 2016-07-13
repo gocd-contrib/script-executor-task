@@ -85,7 +85,7 @@ public class GoPluginImpl implements GoPlugin {
     private GoPluginApiResponse handleConfiguration() {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("script", createField("Script", null, true, false, "0"));
-        response.put("shtype", createField("shtype", null, true, false, "1"));
+        response.put("shtype", createField("Script Type", null, true, false, "1"));
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
 
@@ -108,8 +108,6 @@ public class GoPluginImpl implements GoPlugin {
         Boolean isWindows = isWindows();
         try {
             Map<String, Object> map = (Map<String, Object>) new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), Object.class);
-            JobConsoleLogger.getConsoleLogger().printLine("-----request body----------");
-            JobConsoleLogger.getConsoleLogger().printLine(goPluginApiRequest.requestBody());
 
             Map<String, Object> configKeyValuePairs = (Map<String, Object>) map.get("config");
             Map<String, Object> context = (Map<String, Object>) map.get("context");
@@ -119,9 +117,9 @@ public class GoPluginImpl implements GoPlugin {
             Map<String, String> scriptConfig = (Map<String, String>) configKeyValuePairs.get("script");
             String scriptValue = scriptConfig.get("value");
             JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script: \n ");
-            JobConsoleLogger.getConsoleLogger().printLine("-------------------------");
+            JobConsoleLogger.getConsoleLogger().printLine("[script-executor] -------------------------");
             JobConsoleLogger.getConsoleLogger().printLine(scriptValue);
-            JobConsoleLogger.getConsoleLogger().printLine("-------------------------");
+            JobConsoleLogger.getConsoleLogger().printLine("[script-executor] -------------------------");
             Map<String, String> shTypeConfig = (Map<String, String>) configKeyValuePairs.get("shtype");
             String shType = shTypeConfig.get("value");
             if (shType == null || shType.trim().equals("")){
