@@ -6,12 +6,12 @@
 
     <groupId>com.thoughtworks.go</groupId>
     <artifactId>script-executor</artifactId>
-    <version>0.2.2</version>
+    <version>0.3.0</version>
     <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <go.version>14.4.0</go.version>
+        <go.version>16.1.0</go.version>
     </properties>
 
     <dependencies>
