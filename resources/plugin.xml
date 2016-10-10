@@ -8,8 +8,8 @@
             Thoughtworks Go plugin to run scripts
         </description>
         <vendor>
-            <name>Srinivas Upadhya</name>
-            <url>https://github.com/srinivasupadhya</url>
+            <name>TW Leansw</name>
+            <url>https://github.com/tw-leansw</url>
         </vendor>
     </about>
 </go-plugin>
