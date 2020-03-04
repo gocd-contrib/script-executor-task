@@ -91,7 +91,23 @@ public class GoPluginImpl implements GoPlugin {
 
     private GoPluginApiResponse handleValidation(GoPluginApiRequest goPluginApiRequest) {
         Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, String> errors = new HashMap<String, String>();
+
+        Map<String, Map<String, String>> map = new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), Map.class);
+        String scriptValue = map.get("script").get("value");
+        String shellType = map.get("shtype").get("value");
+
+        putInErrors(errors, scriptValue, "script", "Script can't be empty");
+        putInErrors(errors, shellType, "shtype", "Shell type can't be empty");
+
+        response.put("errors", errors);
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
+    }
+
+    private void putInErrors(Map<String, String> errors, String value, String name, String errorMsg) {
+        if (StringUtils.isBlank(value)) {
+            errors.put(name, errorMsg);
+        }
     }
 
     private GoPluginApiResponse handleView() throws IOException {
