@@ -2,8 +2,8 @@
 <go-plugin id="script-executor" version="1">
     <about>
         <name>Script Executor</name>
-        <version>0.3.0</version>
-        <target-go-version>16.1.0</target-go-version>
+        <version>0.3.1</version>
+        <target-go-version>20.1.0</target-go-version>
         <description>
             Thoughtworks Go plugin to run scripts
         </description>
