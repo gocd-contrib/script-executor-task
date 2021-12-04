@@ -16,6 +16,7 @@
 
 package com.tw.go.plugin.task;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
@@ -49,6 +50,7 @@ public class GoPluginImpl implements GoPlugin {
     public final static String REQUEST_EXECUTION = "execute";
 
     public static final int SUCCESS_RESPONSE_CODE = 200;
+    private static final Gson GSON = new GsonBuilder().create();
 
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
@@ -105,7 +107,7 @@ public class GoPluginImpl implements GoPlugin {
         String scriptFileName = null;
         boolean isWindows = isWindows();
         try {
-            Map<String, Object> map = (Map<String, Object>) new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), Object.class);
+            Map<String, Object> map = (Map<String, Object>) GSON.fromJson(goPluginApiRequest.requestBody(), Object.class);
 
             Map<String, Object> configKeyValuePairs = (Map<String, Object>) map.get("config");
             Map<String, Object> context = (Map<String, Object>) map.get("context");
@@ -215,7 +217,7 @@ public class GoPluginImpl implements GoPlugin {
     }
 
     private GoPluginApiResponse renderJSON(final int responseCode, Object response) {
-        final String json = response == null ? null : new GsonBuilder().create().toJson(response);
+        final String json = response == null ? null : GSON.toJson(response);
         return new GoPluginApiResponse() {
             @Override
             public int responseCode() {
