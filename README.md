@@ -2,7 +2,7 @@ GoCD task plugin to run Shell scripts.
 
 *Usage:*
 
-![alt tag](https://raw.githubusercontent.com/tw-leansw/script-executor-task/master/images/screenshot.png)
+![usage screenshot](images/screenshot.png)
 
 *Notes:*
 
