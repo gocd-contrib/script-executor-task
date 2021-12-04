@@ -21,8 +21,6 @@ import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
-import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
-import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.task.JobConsoleLogger;
@@ -33,14 +31,16 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
-import static java.util.Arrays.asList;
 
 @Extension
 public class GoPluginImpl implements GoPlugin {
     public final static String EXTENSION_NAME = "task";
-    public final static List<String> SUPPORTED_API_VERSIONS = asList("1.0");
+    public final static List<String> SUPPORTED_API_VERSIONS = List.of("1.0");
 
     public final static String REQUEST_CONFIGURATION = "configuration";
     public final static String REQUEST_CONFIGURATION_2 = "go.plugin-settings.get-configuration";
@@ -52,19 +52,17 @@ public class GoPluginImpl implements GoPlugin {
 
     public static final int SUCCESS_RESPONSE_CODE = 200;
 
-    private static final Logger LOGGER = Logger.getLoggerFor(GoPluginImpl.class);
-
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
         // ignore
     }
 
     @Override
-    public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) throws UnhandledRequestTypeException {
+    public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) {
         if (goPluginApiRequest.requestName().equals(REQUEST_CONFIGURATION) || goPluginApiRequest.requestName().equals(REQUEST_CONFIGURATION_2)) {
             return handleConfiguration();
         } else if (goPluginApiRequest.requestName().equals(REQUEST_VALIDATION) || goPluginApiRequest.requestName().equals(REQUEST_VALIDATION_2)) {
-            return handleValidation(goPluginApiRequest);
+            return handleValidation();
         } else if (goPluginApiRequest.requestName().equals(REQUEST_TASK_VIEW) || goPluginApiRequest.requestName().equals(REQUEST_TASK_VIEW_2)) {
             try {
                 return handleView();
@@ -84,29 +82,30 @@ public class GoPluginImpl implements GoPlugin {
     }
 
     private GoPluginApiResponse handleConfiguration() {
-        Map<String, Object> response = new HashMap<String, Object>();
-        response.put("script", createField("Script", null, true, false, "0"));
-        response.put("shtype", createField("Shell", "bash", true, false, "1"));
+        Map<String, Object> response = new HashMap<>();
+        response.put("script", createField("Script", null, "0"));
+        response.put("shtype", createField("Shell", "bash", "1"));
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
 
-    private GoPluginApiResponse handleValidation(GoPluginApiRequest goPluginApiRequest) {
-        Map<String, Object> response = new HashMap<String, Object>();
+    private GoPluginApiResponse handleValidation() {
+        Map<String, Object> response = new HashMap<>();
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
 
     private GoPluginApiResponse handleView() throws IOException {
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
         response.put("displayValue", "Script Executor");
         response.put("template", IOUtils.toString(getClass().getResource("/views/task.template.html"), StandardCharsets.UTF_8));
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
 
+    @SuppressWarnings("unchecked")
     private GoPluginApiResponse handleExecute(GoPluginApiRequest goPluginApiRequest) {
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
         String workingDirectory = null;
         String scriptFileName = null;
-        Boolean isWindows = isWindows();
+        boolean isWindows = isWindows();
         try {
             Map<String, Object> map = (Map<String, Object>) new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), Object.class);
 
@@ -160,20 +159,19 @@ public class GoPluginImpl implements GoPlugin {
         return UUID.randomUUID() + (isWindows ? ".bat" : ".sh");
     }
 
-    private String getScriptPath(String workingDirectory, String scriptFileName) {
-        return workingDirectory + "/" + scriptFileName;
+    private Path getScriptPath(String workingDirectory, String scriptFileName) {
+        return Paths.get(workingDirectory, scriptFileName);
     }
 
     private void createScript(String workingDirectory, String scriptFileName, Boolean isWindows, String scriptValue) throws IOException, InterruptedException {
-        File file = new File(getScriptPath(workingDirectory, scriptFileName));
-        scriptValue = cleanupScript(scriptValue);
-        FileUtils.writeStringToFile(file, scriptValue);
+        Path scriptPath = getScriptPath(workingDirectory, scriptFileName);
+        FileUtils.writeStringToFile(scriptPath.toFile(), cleanupScript(scriptValue), StandardCharsets.UTF_8);
 
         if (!isWindows) {
             executeCommand(workingDirectory, null, "chmod", "u+x", scriptFileName);
         }
 
-        JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script written into '" + file.getAbsolutePath() + "'.");
+        JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script written into '" + scriptPath.toAbsolutePath() + "'.");
     }
 
     String cleanupScript(String scriptValue) {
@@ -204,16 +202,16 @@ public class GoPluginImpl implements GoPlugin {
 
     private void deleteScript(String workingDirectory, String scriptFileName) {
         if (!StringUtils.isEmpty(scriptFileName)) {
-            FileUtils.deleteQuietly(new File(getScriptPath(workingDirectory, scriptFileName)));
+            FileUtils.deleteQuietly(getScriptPath(workingDirectory, scriptFileName).toFile());
         }
     }
 
-    private Map<String, Object> createField(String displayName, String defaultValue, boolean isRequired, boolean isSecure, String displayOrder) {
-        Map<String, Object> fieldProperties = new HashMap<String, Object>();
+    private Map<String, Object> createField(String displayName, String defaultValue, String displayOrder) {
+        Map<String, Object> fieldProperties = new HashMap<>();
         fieldProperties.put("display-name", displayName);
         fieldProperties.put("default-value", defaultValue);
-        fieldProperties.put("required", isRequired);
-        fieldProperties.put("secure", isSecure);
+        fieldProperties.put("required", true);
+        fieldProperties.put("secure", false);
         fieldProperties.put("display-order", displayOrder);
         return fieldProperties;
     }
