@@ -26,12 +26,10 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.task.JobConsoleLogger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -150,7 +148,7 @@ public class GoPluginImpl implements GoPlugin {
 
     private boolean isWindows() {
         String osName = System.getProperty("os.name");
-        boolean isWindows = StringUtils.containsIgnoreCase(osName, "windows");
+        boolean isWindows = osName.toLowerCase().contains("windows");
         JobConsoleLogger.getConsoleLogger().printLine("[script-executor] OS detected: '" + osName + "'. Is Windows? " + isWindows);
         return isWindows;
     }
@@ -201,7 +199,7 @@ public class GoPluginImpl implements GoPlugin {
     }
 
     private void deleteScript(String workingDirectory, String scriptFileName) {
-        if (!StringUtils.isEmpty(scriptFileName)) {
+        if (scriptFileName != null && !scriptFileName.isEmpty()) {
             FileUtils.deleteQuietly(getScriptPath(workingDirectory, scriptFileName).toFile());
         }
     }
