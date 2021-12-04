@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -51,7 +52,7 @@ public class GoPluginImpl implements GoPlugin {
 
     public static final int SUCCESS_RESPONSE_CODE = 200;
 
-    private static Logger LOGGER = Logger.getLoggerFor(GoPluginImpl.class);
+    private static final Logger LOGGER = Logger.getLoggerFor(GoPluginImpl.class);
 
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
@@ -97,7 +98,7 @@ public class GoPluginImpl implements GoPlugin {
     private GoPluginApiResponse handleView() throws IOException {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("displayValue", "Script Executor");
-        response.put("template", IOUtils.toString(getClass().getResourceAsStream("/views/task.template.html"), "UTF-8"));
+        response.put("template", IOUtils.toString(getClass().getResource("/views/task.template.html"), StandardCharsets.UTF_8));
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
 
