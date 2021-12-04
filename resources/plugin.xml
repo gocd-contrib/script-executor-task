@@ -5,7 +5,7 @@
         <version>1.0.0</version>
         <target-go-version>20.1.0</target-go-version>
         <description>
-            Thoughtworks Go plugin to run scripts
+            Thoughtworks GoCD plugin to run scripts
         </description>
         <vendor>
             <name>Srinivas Upadhya</name>

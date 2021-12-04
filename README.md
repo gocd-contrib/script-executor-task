@@ -1,4 +1,4 @@
-Go task plugin to run Shell scripts.
+GoCD task plugin to run Shell scripts.
 
 *Usage:*
 
@@ -6,21 +6,21 @@ Go task plugin to run Shell scripts.
 
 *Notes:*
 
-This is only for convenience since you can run all commands directly through Go anyway.
+This is only for convenience since you can run all commands directly through GoCD anyway.
 
 This could be preferable because:
-- Its exactly like shell script. Go's custom command takes a little getting used to.
+- Its exactly like shell script. GoCD's custom command takes a little getting used to.
 - Its easier to CRUD commands since its a script, specially re-order them if required.
 
 It should not be used as a replacement for important scripts like deployment scripts. They should remain in your repository.
 
 *Usage:*
 
-Download jar from releases & place it in `<go-server-location>/plugins/external` & restart Go Server.
+Download jar from releases & place it in `<go-server-location>/plugins/external` & restart GoCD Server.
 
 ## Contributing
 
-We encourage you to contribute to Go. For information on contributing to this project, please see our [contributor's guide](http://www.go.cd/contribute).
+We encourage you to contribute to GoCD. For information on contributing to this project, please see our [contributor's guide](http://www.go.cd/contribute).
 A lot of useful information like links to user documentation, design documentation, mailing lists etc. can be found in the [resources](http://www.go.cd/community/resources.html) section.
 
 ## License
