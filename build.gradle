@@ -1,0 +1,84 @@
+/*
+ * Copyright 2022 Thoughtworks, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'java'
+apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-helpers/master/helper.gradle?_=${(int) (new Date().toInstant().epochSecond / 60)}"
+
+gocdPlugin {
+    id = 'script-executor'
+    pluginVersion = '1.0.2'
+    goCdVersion = '20.1.0'
+    name = 'Script Executor'
+    description = 'Thoughtworks GoCD plugin to run scripts'
+    vendorName = 'Srinivas Upadhya'
+    vendorUrl = 'https://github.com/gocd-contrib/script-executor-task'
+
+    githubRepo {
+        owner = System.getenv('GITHUB_USER') ?: 'bob'
+        repo = 'script-executor-task'
+        token = System.getenv('GITHUB_TOKEN') ?: 'bad-token'
+    }
+
+    pluginProject = project
+
+    prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
+    assetsToRelease = [project.tasks.jar]
+}
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+
+allprojects {
+    group = 'cd.go.contrib'
+    version = gocdPlugin.fullVersion(project)
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    deps = [
+        gocdPluginApi: 'cd.go.plugin:go-plugin-api:22.3.0',
+    ]
+
+    versions = project.ext.deps.collectEntries { lib, libGav -> [lib, libGav.split(':').last()] }
+}
+
+dependencies {
+    compileOnly project.deps.gocdPluginApi
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params'
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
+
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.8.1'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.23.1'
+    testImplementation group: 'cd.go.plugin', name: 'go-plugin-api', version: project.versions.gocdPluginApi
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    from(configurations.runtimeClasspath) {
+        into "lib/"
+    }
+}
