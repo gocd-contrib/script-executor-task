@@ -25,12 +25,12 @@ import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.task.JobConsoleLogger;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -94,10 +94,12 @@ public class GoPluginImpl implements GoPlugin {
     }
 
     private GoPluginApiResponse handleView() throws IOException {
-        Map<String, Object> response = new HashMap<>();
-        response.put("displayValue", "Script Executor");
-        response.put("template", IOUtils.toString(getClass().getResource("/views/task.template.html"), StandardCharsets.UTF_8));
-        return renderJSON(SUCCESS_RESPONSE_CODE, response);
+        try (InputStream resource = getClass().getResourceAsStream("/views/task.template.html")) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("displayValue", "Script Executor");
+            response.put("template", new String(Objects.requireNonNull(resource).readAllBytes(), StandardCharsets.UTF_8));
+            return renderJSON(SUCCESS_RESPONSE_CODE, response);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -122,7 +124,7 @@ public class GoPluginImpl implements GoPlugin {
             JobConsoleLogger.getConsoleLogger().printLine("[script-executor] -------------------------");
             Map<String, String> shTypeConfig = (Map<String, String>) configKeyValuePairs.get("shtype");
             String shType = shTypeConfig.get("value");
-            if (shType == null || shType.trim().equals("")){
+            if (shType == null || shType.trim().equals("")) {
                 shType = "bash";
             }
             JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script Type: " + shType);
@@ -165,7 +167,7 @@ public class GoPluginImpl implements GoPlugin {
 
     private void createScript(String workingDirectory, String scriptFileName, Boolean isWindows, String scriptValue) throws IOException, InterruptedException {
         Path scriptPath = getScriptPath(workingDirectory, scriptFileName);
-        FileUtils.writeStringToFile(scriptPath.toFile(), cleanupScript(scriptValue), StandardCharsets.UTF_8);
+        Files.writeString(scriptPath, cleanupScript(scriptValue), StandardCharsets.UTF_8);
 
         if (!isWindows) {
             executeCommand(workingDirectory, null, "chmod", "u+x", scriptFileName);
@@ -202,7 +204,10 @@ public class GoPluginImpl implements GoPlugin {
 
     private void deleteScript(String workingDirectory, String scriptFileName) {
         if (scriptFileName != null && !scriptFileName.isEmpty()) {
-            FileUtils.deleteQuietly(getScriptPath(workingDirectory, scriptFileName).toFile());
+            try {
+                Files.deleteIfExists(getScriptPath(workingDirectory, scriptFileName));
+            } catch (IOException ignore) {
+            }
         }
     }
 

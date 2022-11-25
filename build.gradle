@@ -19,7 +19,7 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
     id = 'script-executor'
-    pluginVersion = '1.0.2'
+    pluginVersion = '1.0.3'
     goCdVersion = '20.1.0'
     name = 'Script Executor'
     description = 'Thoughtworks GoCD plugin to run scripts'
@@ -61,7 +61,6 @@ ext {
 dependencies {
     compileOnly project.deps.gocdPluginApi
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
-    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
     testImplementation platform('org.junit:junit-bom:5.9.2')
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
