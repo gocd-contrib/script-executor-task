@@ -176,7 +176,7 @@ public class GoPluginImpl implements GoPlugin {
             return executeCommand(workingDirectory, environmentVariables, "cmd", "/c", scriptFileName);
         }
         String shCmd = "/bin/" + shType;
-        return executeCommand(workingDirectory, environmentVariables, shCmd, "-c", "./" + scriptFileName);
+        return executeCommand(workingDirectory, environmentVariables, shCmd, "-euo", "pipefail", "-c", "./" + scriptFileName);
     }
 
     private int executeCommand(String workingDirectory, Map<String, String> environmentVariables, String... command) throws IOException, InterruptedException {
