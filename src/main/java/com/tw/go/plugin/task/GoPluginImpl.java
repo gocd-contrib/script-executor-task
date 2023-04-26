@@ -118,16 +118,12 @@ public class GoPluginImpl implements GoPlugin {
 
             Map<String, String> scriptConfig = (Map<String, String>) configKeyValuePairs.get("script");
             String scriptValue = scriptConfig.get("value");
-            JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script: \n ");
-            JobConsoleLogger.getConsoleLogger().printLine("[script-executor] -------------------------");
             JobConsoleLogger.getConsoleLogger().printLine(scriptValue);
-            JobConsoleLogger.getConsoleLogger().printLine("[script-executor] -------------------------");
             Map<String, String> shTypeConfig = (Map<String, String>) configKeyValuePairs.get("shtype");
             String shType = shTypeConfig.get("value");
             if (shType == null || shType.trim().equals("")) {
                 shType = "bash";
             }
-            JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script Type: " + shType);
 
             scriptFileName = generateScriptFileName(isWindows);
 
@@ -153,7 +149,6 @@ public class GoPluginImpl implements GoPlugin {
     private boolean isWindows() {
         String osName = System.getProperty("os.name");
         boolean isWindows = osName.toLowerCase().contains("windows");
-        JobConsoleLogger.getConsoleLogger().printLine("[script-executor] OS detected: '" + osName + "'. Is Windows? " + isWindows);
         return isWindows;
     }
 
@@ -169,11 +164,7 @@ public class GoPluginImpl implements GoPlugin {
         Path scriptPath = getScriptPath(workingDirectory, scriptFileName);
         Files.writeString(scriptPath, cleanupScript(scriptValue), StandardCharsets.UTF_8);
 
-        if (!isWindows) {
-            executeCommand(workingDirectory, null, "chmod", "u+x", scriptFileName);
-        }
-
-        JobConsoleLogger.getConsoleLogger().printLine("[script-executor] Script written into '" + scriptPath.toAbsolutePath() + "'.");
+        executeCommand(workingDirectory, null, "chmod", "u+x", scriptFileName);
     }
 
     String cleanupScript(String scriptValue) {
