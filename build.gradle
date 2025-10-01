@@ -19,8 +19,8 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
     id = 'script-executor'
-    pluginVersion = '1.0.3'
-    goCdVersion = '20.1.0'
+    pluginVersion = '2.0.0'
+    goCdVersion = '22.1.0'
     name = 'Script Executor'
     description = 'Thoughtworks GoCD plugin to run scripts'
     vendorName = 'Srinivas Upadhya'
@@ -38,8 +38,13 @@ gocdPlugin {
     assetsToRelease = [project.tasks.jar]
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 tasks.withType(JavaCompile).configureEach {
-  options.release = 11
+    options.release = 17
 }
 
 allprojects {
